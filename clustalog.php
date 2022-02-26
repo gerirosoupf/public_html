@@ -65,7 +65,7 @@ require "runClustalo.php";
 
       <nav id="navbar" class="nav-menu navbar">
         <ul>
-          <li><a href="home.html" class="nav-link scrollto"><i class="bx bx-home"></i> <span>Home</span></a></li>
+          <li><a href="index.html" class="nav-link scrollto"><i class="bx bx-home"></i> <span>Home</span></a></li>
           <li><a href="about.html" class="nav-link scrollto"><i class="bx bx-user"></i> <span>About</span></a></li>
           <li><a href="resume.html" class="nav-link scrollto"><i class="bx bx-book-content"></i> <span>Resume</span></a></li>
           <li><a href="projects.html" class="nav-link scrollto active"><i class="bx bx-server"></i> <span>Projects</span></a></li>

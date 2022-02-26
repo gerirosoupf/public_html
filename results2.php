@@ -50,7 +50,7 @@ require "runClustalo.php";
   <i class="bi bi-list mobile-nav-toggle d-xl-none"></i>
 
   <!-- ======= Header ======= -->
-  <!-- <header id="header">
+  <header id="header">
     <div class="d-flex flex-column">
 
       <div class="profile">
@@ -65,15 +65,15 @@ require "runClustalo.php";
 
       <nav id="navbar" class="nav-menu navbar">
         <ul>
-          <li><a href="home.html" class="nav-link scrollto"><i class="bx bx-home"></i> <span>Home</span></a></li>
+          <li><a href="index.html" class="nav-link scrollto"><i class="bx bx-home"></i> <span>Home</span></a></li>
           <li><a href="about.html" class="nav-link scrollto"><i class="bx bx-user"></i> <span>About</span></a></li>
           <li><a href="resume.html" class="nav-link scrollto"><i class="bx bx-book-content"></i> <span>Resume</span></a></li>
           <li><a href="projects.html" class="nav-link scrollto active"><i class="bx bx-server"></i> <span>Projects</span></a></li>
         </ul>
-      </nav> -->
+      </nav>
       <!-- .nav-menu -->
-    <!-- </div>
-  </header> -->
+    </div>
+  </header>
   <!-- End Header -->
 
     <section>
