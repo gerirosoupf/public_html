@@ -31,7 +31,8 @@ if (isset($_POST["submit"])){
         $temp_file = "temp.fa";
         $temp_fh = fopen($temp_file, "wt");
 
-        $p = strpos($input_fasta, ">");
+        // Check if input is a FASTA format
+        $p = substr($input_fasta,0,1) == ">";
         if ($p){
             fwrite($temp_fh, $input_fasta);
         };
@@ -52,7 +53,7 @@ if (isset($_POST["submit"])){
     // Deleting previous results, if any
     delete_files($dir_results);
 
-    $output_file = $dir_results . "clustalo" . $output_format;
+    $output_file = $dir_results . "clustalo." . $output_format;
     $cmd = "./clustalo --force -i " . $temp_file . " -o " . $output_file . " --outfmt " . $output_format;
     exec($cmd, $output, $exit_code);
 

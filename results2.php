@@ -20,7 +20,7 @@ require "runClustalo.php";
   <title>Geriroso ClustalO</title>
   <meta content="Clustal Omega Tool" name="description">
   <meta content="Gerard Romero" name="author">
-  
+
 
   <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon" type="image/png" sizes="32x32">
@@ -50,7 +50,7 @@ require "runClustalo.php";
   <i class="bi bi-list mobile-nav-toggle d-xl-none"></i>
 
   <!-- ======= Header ======= -->
-  <header id="header">
+  <!-- <header id="header">
     <div class="d-flex flex-column">
 
       <div class="profile">
@@ -70,9 +70,11 @@ require "runClustalo.php";
           <li><a href="resume.html" class="nav-link scrollto"><i class="bx bx-book-content"></i> <span>Resume</span></a></li>
           <li><a href="projects.html" class="nav-link scrollto active"><i class="bx bx-server"></i> <span>Projects</span></a></li>
         </ul>
-      </nav><!-- .nav-menu -->
-    </div>
-  </header><!-- End Header -->
+      </nav> -->
+      <!-- .nav-menu -->
+    <!-- </div>
+  </header> -->
+  <!-- End Header -->
 
     <section>
     <div class="container" id='form'>
@@ -122,7 +124,7 @@ require "runClustalo.php";
                                 //echo $_FILES["seqfile"]["tmp_name"];
                                 //echo $temp_file;
                                 //echo $exit_code;
-                                echo $input_fasta;
+                                echo $cmd;
                 ?>
                     <div class="row justify-content-center">
                         <div class="card" style="width: 500px;">
@@ -136,10 +138,10 @@ require "runClustalo.php";
                             </div>
                         </div>
                     </div>
-                <?php      
-                exit();                      
+                <?php
+                exit();
                             };
-                            $fh = fopen($outfile, "r");
+                            $fh = fopen($output_file, "r");
                             while (($line = fgets($fh))) {
                                 echo nl2br($line);
                             };
