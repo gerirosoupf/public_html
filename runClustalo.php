@@ -54,10 +54,11 @@ if (isset($_POST["submit"])){
     delete_files($dir_results);
 
     $output_file = $dir_results . "clustalo." . $output_format;
+    // In SERVER MUST GO WITH ./
     $cmd = "./clustalo --force -i " . $temp_file . " -o " . $output_file . " --outfmt " . $output_format;
     exec($cmd, $output, $exit_code);
 
-    if (!empty($input_file) OR !empty($input_uniprot) OR !empty($input_file)){
+    if (!empty($input_fasta) OR !empty($input_uniprot)){
         fclose($temp_fh);
     };
 };

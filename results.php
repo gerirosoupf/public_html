@@ -6,68 +6,7 @@
 
 // Loading global variables
 require "globals.inc.php";
-
-// Take data from $_SESSION, loaded in clustalog.php
-
-$_SESSION['queryData'] = $_REQUEST;
-
-// Set temporary file name to a unique value to protect from concurrent runs
-$query_ID = uniqId('clustalo');
-$tempFile = $tmpDir . "/" . $query_ID;
-
-// open the file
-$ff = fopen($tempFile . ".query.fasta", 'wt');
-$file_download=$tempFile . ".clustalo.aln";
-// if it is a file upload
-if ($_FILES['seqfile']['name']) {
-    if (($_FILES['seqfile']['tmp_name'])) {
-        $_SESSION['queryData']['input_seq'] = file_get_contents($_FILES['seqfile']['tmp_name']);
-        fwrite($ff, $_SESSION['queryData']['input_seq']);
-    }
-}
-// if there are uniprot ids
-if (strlen($_SESSION['queryData']['uniprotid']) != 0) {
-    if (strpos($_SESSION['queryData']['uniprotid'], ',') ) {
-        $id_list = explode(",", $_SESSION['queryData']['uniprotid']);
-    }
-    else {
-        echo '
-        <script type="text/javascript">
-            alert("Please, separate the ids by commas without spaces.");
-            window.location.href = "../clustalo.php";
-        </script>
-        ';
-    }
-    // Now, we search for sequences in Uniprot
-    foreach ($id_list as $id) {
-        //print_r($id."\n");
-        $_SESSION['queryData']['fastaseq'] = file_get_contents("https://www.uniprot.org/uniprot/".$id.".fasta");
-        //print_r($sequence);
-        if (empty($_SESSION['queryData']['fastaseq'])) {
-            echo '
-            <script type="text/javascript">
-                alert("Some ID failed. Make sure that they are correct.");
-                window.location.href = "../clustalo.php";
-            </script>
-            ';
-        }
-        else {
-            fwrite($ff, $_SESSION['queryData']['fastaseq']);
-        }
-    }
-}
-// if the sequences are written
-if ($_SESSION['queryData']['fastaseq']){
-  fwrite($ff, $_SESSION['queryData']['fastaseq']);
-}
-
-//fclose($ff);
-fclose($ff);
-// execute ClustalO, command line prefix set in globals.inc.php
-$cmd = "clustalo" . " -i " . $tempFile . ".query.fasta -o " . $tempFile . ".clustalo.out --outfmt ". $_POST['output_format'];
-// DEBUG print command line
-#print "$cmd\n";
-exec($cmd);
+require "runClustalo.php";
 
 ?>
 
@@ -81,7 +20,7 @@ exec($cmd);
   <title>Geriroso ClustalO</title>
   <meta content="Clustal Omega Tool" name="description">
   <meta content="Gerard Romero" name="author">
-  
+
 
   <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon" type="image/png" sizes="32x32">
@@ -126,38 +65,109 @@ exec($cmd);
 
       <nav id="navbar" class="nav-menu navbar">
         <ul>
-          <li><a href="home.html" class="nav-link scrollto"><i class="bx bx-home"></i> <span>Home</span></a></li>
+          <li><a href="index.html" class="nav-link scrollto"><i class="bx bx-home"></i> <span>Home</span></a></li>
           <li><a href="about.html" class="nav-link scrollto"><i class="bx bx-user"></i> <span>About</span></a></li>
           <li><a href="resume.html" class="nav-link scrollto"><i class="bx bx-book-content"></i> <span>Resume</span></a></li>
           <li><a href="projects.html" class="nav-link scrollto active"><i class="bx bx-server"></i> <span>Projects</span></a></li>
         </ul>
-      </nav><!-- .nav-menu -->
+      </nav>
+      <!-- .nav-menu -->
     </div>
-  </header><!-- End Header -->
+  </header>
+  <!-- End Header -->
 
     <section>
     <div class="container" id='form'>
       <div class="section-title">
-        <h2>Clustal Omega</h2>
-        <br>
-        <h3>Results of the alignment</h3>
-        <p>You can visualize the output of the alignment on the browser or download it in the button at the bottom</p>
+          <h2>Clustal Omega</h2>
+          <h3>Results of the alignment</h3>
+          <p>You can visualize the output of the alignment on the browser or download it in the button at the bottom</p>
       </div>
         <div class="row justify-content-center">
             <div class="col-md-10 col-lg-10 col-xl-9">
-                <p>
-          <?php
-          if (file_exists($tempFile . ".clustalo.aln")) {
-            $fileread= file_get_contents($tempFile . ".clustalo.aln");
-            $secuencia = "<pre>" . $fileread . "</pre>";
-          echo $secuencia;
-          };
-          ?>
+                <?php
+                    if (!empty($input_error)) {
+                ?>
+                    <div class="row justify-content-center">
+                        <div class="card" style="width: 500px;">
+                            <div class="row no-gutters">
+                                <div class="card-body">
+                                    <h3 class="card-title"><b>Oops..</b></h3>
+                                    <h5 class="card-title">Something went wrong!</h5>
+                                    <p class="card-text"> <?php echo $input_error; ?></p>
+                                    <button type='submit' class="btn btn-primary justify-content-center" onclick="window.location.href='clustalog.php'">Go back to form</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php
+                    } elseif (!empty($output_format_error)) {
+                ?>
+                    <div class="row justify-content-center">
+                        <div class="card" style="width: 500px;">
+                            <div class="row no-gutters">
+                                <div class="card-body">
+                                    <h3 class="card-title"><b>Oops..</b></h3>
+                                    <h5 class="card-title">Something went wrong!</h5>
+                                    <p class="card-text"> <?php echo $output_format_error; ?></p>
+                                    <button type='submit' class="btn btn-primary justify-content-center" onclick="window.location.href='clustalog.php'">Go back to form</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php
+                    } else {
+                        if (isset($exit_code)) {
+                            if ($exit_code != 0) {
+                ?>
+                    <div class="row justify-content-center">
+                        <div class="card" style="width: 500px;">
+                            <div class="row no-gutters">
+                                <div class="card-body">
+                                    <h3 class="card-title"><b>Oops..</b></h3>
+                                    <h5 class="card-title">Something went wrong!</h5>
+                                    <p class="card-text">Error during the process</p>
+                                    <button type='submit' class="btn btn-primary justify-content-center" onclick="window.location.href='clustalog.php'">Go back to form</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <p style = "font-family:monospace;" class = "justify-content-center">
+                <?php
+                exit();
+                            };
+                            ?>
+                            <p style = "font-family:monospace;">
+                            <?php
+                            $fh = fopen($output_file, "r");
+                            while (($line = fgets($fh))) {
+                                echo nl2br($line);
+                            };
+                            ?>
+                              <div class="row justify-content-between">
+                              <div class = "col-sm-6">
+                                <div class="container-fluid" style="text-align: center;">
+                                  <a href="<?php echo $output_file ?>" download = "<?php echo $output_file ?>" class="btn btn-primary justify-content-center" role="button">Download alignment</a>
+                                </div>
+                              </div>
+                              <div class = "col-sm-4">
+                                <div class="container-fluid" style="text-align: center;">
+                                  <button type='submit' onclick="window.location.href='clustalog.php'" class="btn btn-outline-dark" role="button">New alignment</button>
+                                </div>
+                              </div>
+                            </div>
+                          <?php
+
+                            if (file_exists($temp_file)){
+                                unlink($temp_file);
+                            };
+                        };
+                    };
+                ?>
                 </p>
-                <a download = 'results.clustalo.aln' href = <?php echo './tmp/' . $query_ID . '.clustalo.aln'; ?>><button class="btn btn-primary">Download alignment</button></a>
+
             </div>
         </div>
-
     </section>
 
   <!-- ======= Footer ======= -->

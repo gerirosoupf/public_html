@@ -91,7 +91,7 @@ require "runClustalo.php";
         <h3>Multiple Sequence Alignment </h3>
         <p>Clustal Omega is a new multiple sequence alignment program that uses seeded guide trees and HMM profile-profile techniques to generate alignments between three or more sequences. For more information, please visit the following link: <a href="http://www.clustal.org/omega/">Clustal Omega</a></p>
       </div>
-      <form name="ClustalForm" action="results2.php" method="POST" enctype="multipart/form-data" onsubmit="ChangeDisplay()">
+      <form name="ClustalForm" action="results.php" method="POST" enctype="multipart/form-data" onsubmit="ChangeDisplay()">
           <fieldset>
             <legend>STEP 1 - Enter your input sequences</legend>
             <div class="row">
